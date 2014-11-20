@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>GeoMixer Vector Layer Example</title>
+	<meta charset="utf-8" />
+    <style>
+    </style>
+
+	<link rel="stylesheet" href="main.css" />
+    
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.7.0/underscore.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.1.2/backbone.js"></script>
+    
+    <script src="../../Thorax/thorax.js"></script>
+    
+    <script src="../LayersTree.js"></script>
+    <script src="LayersTreeView.js"></script>
+    <script src="TreeExample.js"></script>
+    <script>
+        $(function() {
+            var layersTree = (new LayersTreeNode()).init({content: treeExample.Result}, null);
+            var layersTreeView = new LayersTreeNodeView({model: layersTree});
+            layersTreeView.appendTo($('#tree-placeholder'));
+        })
+    </script>    
+</head>
+<body>
+	<div id="tree-placeholder"></div>
+</body>
+</html>
