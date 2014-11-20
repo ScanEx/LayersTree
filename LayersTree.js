@@ -1,12 +1,15 @@
 ﻿var LayersTreeNode = Thorax.Model.extend({
-    init: function(rawTreeNode, parent) {
+    constructor: function(rawTreeNode, parent) {
+        Backbone.Model.apply(this);
         var props = rawTreeNode.content.properties,
             rawChildren = rawTreeNode.content.children;
+            
+        this.id = props.GroupID || props.name;
         
         if (rawChildren && rawChildren.length) {
             var children = new LayersTreeChildren(
                 _.map(rawChildren, function(child) {
-                    return (new LayersTreeNode()).init(child, this);
+                    return new LayersTreeNode(child, this);
                 }, this)
             );
             this.set('childrenNodes', children, {silent: true});
@@ -80,6 +83,15 @@
             var parent = this._parent;
             parent && parent.updateNodeVisibility(this);
         }
+    },
+    find: function(id) {
+        if (this.id == id) {
+            return this;
+        }
+        var children = this.attributes.childrenNodes;
+        return children && children.reduce(function(memo, node) {
+            return memo || node.find(id);
+        }, null);
     }
 })
 

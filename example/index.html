@@ -20,7 +20,7 @@
     <script src="TreeExample.js"></script>
     <script>
         $(function() {
-            var layersTree = (new LayersTreeNode()).init({content: treeExample.Result}, null);
+            var layersTree = new LayersTreeNode({content: treeExample.Result});
             var layersTreeView = new LayersTreeNodeView({model: layersTree});
             layersTreeView.appendTo($('#tree-placeholder'));
         })
