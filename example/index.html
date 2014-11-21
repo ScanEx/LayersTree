@@ -23,10 +23,30 @@
             var layersTree = new LayersTreeNode({content: treeExample.Result});
             var layersTreeView = new LayersTreeNodeView({model: layersTree});
             layersTreeView.appendTo($('#tree-placeholder'));
+            
+            var logs = new Thorax.Collection();
+            var logsView = new Thorax.View({
+                collection: logs,
+                template: Handlebars.compile(
+                    '<div>Logs</div>' + 
+                    '<div>{{#collection}}' +
+                        '{{name}} {{#if visible}}visible{{else}}hidden{{/if}}' +
+                    '{{/collection}}</div>')
+            })
+            logsView.appendTo($('#log'));
+            
+            layersTree.on('childChange', function(node) {
+                logs.add(new Thorax.Model({
+                    name: node.get('properties').title, 
+                    date: new Date(),
+                    visible: node.get('visible')
+                }), {at: 0});
+            })
         })
     </script>    
 </head>
 <body>
 	<div id="tree-placeholder"></div>
+    <div id="log"></div>
 </body>
 </html>

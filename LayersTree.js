@@ -9,7 +9,16 @@
         if (rawChildren && rawChildren.length) {
             var children = new LayersTreeChildren(
                 _.map(rawChildren, function(child) {
-                    return new LayersTreeNode(child, this);
+                    var node = new LayersTreeNode(child, this);
+                    node.on({
+                        change: function() {
+                            this.trigger('childChange', node);
+                        }, 
+                        childChange: function(targetNode) {
+                            this.trigger('childChange', targetNode);
+                        }
+                    }, this);
+                    return node;
                 }, this)
             );
             this.set('childrenNodes', children, {silent: true});
