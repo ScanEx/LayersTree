@@ -1,11 +1,9 @@
 var LayersTreeNodeView = Thorax.View.extend({
     initialize: function() {
-        this.isExpanded = false;
-        if (this.model._parent) {
-            this.model._parent.on('change:list', function() {
-                this.render();
-            }, this);
-        }
+        var parent = this.model.get('parent');
+        parent && parent.on('change:list', function() {
+            this.render();
+        }, this);
     },
     itemView: LayersTreeNodeView,
     model: LayersTreeNode,
@@ -18,14 +16,13 @@ var LayersTreeNodeView = Thorax.View.extend({
             this.model.set('list', !this.model.get('list'));
         },
         'click .expand': function() {
-            this.isExpanded = !this.isExpanded;
-            this.render();
+            this.model.set('expanded', !this.model.get('expanded'));
         }
     },
     context: function() {
     
         //lazy generation
-        if (this.isExpanded && !this.childrenView) {
+        if (this.model.get('expanded') && !this.childrenView) {
             this.childrenView = new LayersTreeCollectionView({collection: this.model.get('childrenNodes')});
             this.childrenView.retain(); //thorax releases this view when folder view is 
         }
@@ -36,7 +33,7 @@ var LayersTreeNodeView = Thorax.View.extend({
     },
     template: Handlebars.compile(
         '<div class="treeNode">' +
-            '{{#if childrenNodes}}<span class="expand">{{#if isExpanded}}-{{else}}+{{/if}}</span>{{/if}}' +
+            '{{#if childrenNodes}}<span class="expand">{{#if expanded}}-{{else}}+{{/if}}</span>{{/if}}' +
             '<label>' + 
                 '<input type="{{#if isRadio}}radio{{else}}checkbox{{/if}}" class="visible-input" {{#visible}}checked{{/visible}}>' + 
                 '<span class="title">{{properties.title}}</span>' + 
@@ -45,7 +42,7 @@ var LayersTreeNodeView = Thorax.View.extend({
                     '({{childrenNodes.length}})' +
                 '{{/if}}' +
             '</label>' + 
-            '{{#if isExpanded}}{{#if childrenNodes}}<div class="children">{{view childrenView}}</div>{{/if}}{{/if}}' +
+            '{{#if expanded}}{{#if childrenNodes}}<div class="children">{{view childrenView}}</div>{{/if}}{{/if}}' +
         '</div>'
     )
 });

@@ -34,7 +34,7 @@
             })
             
             layersTree.on('childChange', function(node) {
-                console.log(node.get('properties').title, node.get('visible'));
+                console.log(node.get('properties').title, node.get('visible'), node.get('depth'));
             })
         })
     </script>    

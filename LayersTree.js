@@ -1,11 +1,21 @@
 ﻿var LayersTreeNode = Thorax.Model.extend({
     constructor: function(rawTreeNode, parent) {
         Backbone.Model.apply(this);
+        
         var props = rawTreeNode.content.properties,
             rawChildren = rawTreeNode.content.children;
             
         this.id = props.GroupID || props.name;
         
+        this.set({
+            parent: parent,
+            visible: !!props.visible,
+            list: !!props.list,
+            properties: props,
+            depth: parent ? parent.get('depth') + 1 : 0,
+            expanded: !!props.expanded
+        });
+
         if (rawChildren && rawChildren.length) {
             var children = new LayersTreeChildren(
                 _.map(rawChildren, function(child) {
@@ -23,17 +33,9 @@
             );
             this.set('childrenNodes', children, {silent: true});
         }
-        
-        this._parent = parent;
-        
-        this.set({
-            visible: !!props.visible,
-            list: !!props.list,
-            properties: props
-        });
-        
+
         this.on('change:list', function(){this.updateNodeVisibility();}, this);
-        
+
         return this;
     },
     
@@ -56,8 +58,8 @@
         this._setSubtreeVisibility(isVisible);
         
         //идём вверх по дереву до корня и меняем видимость родителей
-        var parentElem = this._parent;
-        parentElem && parentElem.updateNodeVisibility(this); 
+        var parent = this.attributes.parent;
+        parent && parent.updateNodeVisibility(this);
     },
     
     
