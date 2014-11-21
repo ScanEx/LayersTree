@@ -24,29 +24,24 @@
             var layersTreeView = new LayersTreeNodeView({model: layersTree});
             layersTreeView.appendTo($('#tree-placeholder'));
             
-            var logs = new Thorax.Collection();
-            var logsView = new Thorax.View({
-                collection: logs,
-                template: Handlebars.compile(
-                    '<div>Logs</div>' + 
-                    '<div>{{#collection}}' +
-                        '{{name}} {{#if visible}}visible{{else}}hidden{{/if}}' +
-                    '{{/collection}}</div>')
+            var state;
+            $('.saveButton').click(function() {
+                state = layersTree.saveState();
+                console.log(state);
             })
-            logsView.appendTo($('#log'));
+            $('.loadButton').click(function() {
+                state && layersTree.loadState(state);
+            })
             
             layersTree.on('childChange', function(node) {
-                logs.add(new Thorax.Model({
-                    name: node.get('properties').title, 
-                    date: new Date(),
-                    visible: node.get('visible')
-                }), {at: 0});
+                console.log(node.get('properties').title, node.get('visible'));
             })
         })
     </script>    
 </head>
 <body>
-	<div id="tree-placeholder"></div>
-    <div id="log"></div>
+    <button class="saveButton">Save</button>
+    <button class="loadButton">Load</button>
+	<div id="tree-placeholder"></div>    
 </body>
 </html>

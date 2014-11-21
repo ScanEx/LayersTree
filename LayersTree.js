@@ -101,6 +101,30 @@
         return children && children.reduce(function(memo, node) {
             return memo || node.find(id);
         }, null);
+    },
+    _saveState: function(state) {
+        var attrs = this.attributes;
+        if (attrs.childrenNodes) {
+            attrs.childrenNodes.each(function(node) {
+                node._saveState(state);
+            })
+        } else {
+            state[this.id] = attrs.visible;
+        }
+        return state;
+    },
+    saveState: function() {return this._saveState({})},
+    loadState: function(state) {
+        var attrs = this.attributes;
+        if (attrs.childrenNodes) {
+            attrs.childrenNodes.each(function(node) {
+                node.loadState(state);
+            })
+        } else {
+            if (this.id in state) {
+                this.setNodeVisibility(state[this.id]);
+            }
+        }
     }
 })
 
