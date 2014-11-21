@@ -91,7 +91,7 @@
         if (isVisible !== attrs.visible) {
             this.set('visible', isVisible);
             
-            var parent = this._parent;
+            var parent = this.attributes.parent;
             parent && parent.updateNodeVisibility(this);
         }
     },
@@ -107,24 +107,34 @@
     _saveState: function(state) {
         var attrs = this.attributes;
         if (attrs.childrenNodes) {
+            state[this.id] = {
+                expanded: attrs.expanded
+            }
             attrs.childrenNodes.each(function(node) {
                 node._saveState(state);
             })
         } else {
-            state[this.id] = attrs.visible;
+            state[this.id] = {
+                visible: attrs.visible
+            }
         }
         return state;
     },
     saveState: function() {return this._saveState({})},
     loadState: function(state) {
-        var attrs = this.attributes;
-        if (attrs.childrenNodes) {
-            attrs.childrenNodes.each(function(node) {
+        var nodeState = state[this.id],
+            children = this.attributes.childrenNodes;
+            
+        if (children) {
+            if (nodeState && 'expanded' in nodeState) {
+                this.set('expanded', nodeState.expanded);
+            }
+            children.each(function(node) {
                 node.loadState(state);
             })
         } else {
-            if (this.id in state) {
-                this.setNodeVisibility(state[this.id]);
+            if (nodeState && 'visible' in nodeState) {
+                this.setNodeVisibility(nodeState.visible);
             }
         }
     }

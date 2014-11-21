@@ -27,8 +27,9 @@ var LayersTreeNodeView = Thorax.View.extend({
             this.childrenView.retain(); //thorax releases this view when folder view is 
         }
         
+        var parentModel = this.model.get('parent');
         return $.extend({}, this.model.attributes, {
-            isRadio: this.parent ? this.parent.parent.model.get('list') : false
+            isRadio: parentModel ? parentModel.get('list') : false
         });
     },
     template: Handlebars.compile(
