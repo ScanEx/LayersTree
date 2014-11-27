@@ -1,5 +1,6 @@
 {
+    "name": "gmx-LayersTree",
     "devDependencies": {
-        "gulp": "~3.6.0"
+        "gulp": "3.8.10"
     }
 }
