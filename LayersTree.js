@@ -137,6 +137,18 @@
                 this.setNodeVisibility(nodeState.visible);
             }
         }
+    },
+    
+    eachNode: function(visitor, onlyLeaves) {
+        var children = this.attributes.childrenNodes;
+        
+        if (!onlyLeaves || !children) {
+            visitor(this);
+        }
+        
+        children && children.forEach(function(child) {
+            child.eachNode(visitor, onlyLeaves);
+        })
     }
 })
 
