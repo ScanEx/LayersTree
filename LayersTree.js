@@ -107,34 +107,32 @@
     _saveState: function(state) {
         var attrs = this.attributes;
         if (attrs.childrenNodes) {
-            state[this.id] = {
-                expanded: attrs.expanded
-            }
+            state.expanded[this.id] = attrs.expanded;
             attrs.childrenNodes.each(function(node) {
                 node._saveState(state);
             })
         } else {
-            state[this.id] = {
-                visible: attrs.visible
-            }
+            state.visible[this.id] = attrs.visible;
         }
         return state;
     },
-    saveState: function() {return this._saveState({})},
+    saveState: function() {
+        return this._saveState({expanded: {}, visible: {}});
+    },
     loadState: function(state) {
         var nodeState = state[this.id],
             children = this.attributes.childrenNodes;
             
         if (children) {
-            if (nodeState && 'expanded' in nodeState) {
-                this.set('expanded', nodeState.expanded);
+            if (this.id in state.expanded) {
+                this.set('expanded', state.expanded[this.id]);
             }
             children.each(function(node) {
                 node.loadState(state);
             })
         } else {
-            if (nodeState && 'visible' in nodeState) {
-                this.setNodeVisibility(nodeState.visible);
+            if (this.id in state.visible) {
+                this.setNodeVisibility(state.visible[this.id]);
             }
         }
     },
