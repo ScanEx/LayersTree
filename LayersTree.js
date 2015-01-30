@@ -12,6 +12,7 @@
             visible: !!props.visible,
             list: !!props.list,
             properties: props,
+            geometry: rawTreeNode.content.geometry,
             depth: parent ? parent.get('depth') + 1 : 0,
             expanded: !!props.expanded
         });
@@ -95,6 +96,7 @@
             parent && parent.updateNodeVisibility(this);
         }
     },
+    
     find: function(id) {
         if (this.id == id) {
             return this;
@@ -104,6 +106,28 @@
             return memo || node.find(id);
         }, null);
     },
+    
+    getBounds: function() {
+        if (typeof L === 'undefined') {
+            return null; //Leaflet is required to calculate bounds
+        }
+        
+        var attrs = this.attributes;
+        if (attrs.geometry) {
+            return L.bounds(attrs.geometry.coordinates[0]);
+        }
+        
+        var bounds = L.bounds([]);
+        
+        if (attrs.childrenNodes) {
+            attrs.childrenNodes.each(function(child) {
+                var b = child.getBounds();
+                b.isValid() && bounds.extend(b.min).extend(b.max);
+            })
+        }
+        return bounds;
+    },
+    
     _saveState: function(state) {
         var attrs = this.attributes;
         if (attrs.childrenNodes) {
