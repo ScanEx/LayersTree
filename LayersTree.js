@@ -143,20 +143,26 @@
     saveState: function() {
         return this._saveState({expanded: {}, visible: {}});
     },
-    loadState: function(state) {
+    loadState: function(state, applyInitialState) {
         var nodeState = state[this.id],
-            children = this.attributes.childrenNodes;
+            attrs = this.attributes,
+            children = attrs.childrenNodes;
             
         if (children) {
             if (this.id in state.expanded) {
                 this.set('expanded', state.expanded[this.id]);
+            } else if (applyInitialState){
+                this.set('expanded', !!attrs.properties.expanded);
             }
+            
             children.each(function(node) {
-                node.loadState(state);
+                node.loadState(state, applyInitialState);
             })
         } else {
             if (this.id in state.visible) {
                 this.setNodeVisibility(state.visible[this.id]);
+            } else if (applyInitialState){
+                this.setNodeVisibility(!!attrs.properties.visible);
             }
         }
     },
