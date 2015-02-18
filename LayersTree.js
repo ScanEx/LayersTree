@@ -1,4 +1,8 @@
-﻿var LayersTreeNode = Thorax.Model.extend({
+﻿var nsGmx = nsGmx || {};
+
+(function() {
+
+nsGmx.LayersTreeNode = Thorax.Model.extend({
     constructor: function(rawTreeNode, parent) {
         Backbone.Model.apply(this);
         
@@ -20,7 +24,7 @@
         if (rawChildren && rawChildren.length) {
             var children = new LayersTreeChildren(
                 _.map(rawChildren, function(child) {
-                    var node = new LayersTreeNode(child, this);
+                    var node = new nsGmx.LayersTreeNode(child, this);
                     node.on({
                         change: function() {
                             this.trigger('childChange', node);
@@ -180,4 +184,6 @@
     }
 })
 
-var LayersTreeChildren = Thorax.Collection.extend({model: LayersTreeNode});
+var LayersTreeChildren = Thorax.Collection.extend({model: nsGmx.LayersTreeNode});
+
+})();

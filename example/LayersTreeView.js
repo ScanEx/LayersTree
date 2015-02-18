@@ -6,7 +6,7 @@ var LayersTreeNodeView = Thorax.View.extend({
         }, this);
     },
     itemView: LayersTreeNodeView,
-    model: LayersTreeNode,
+    model: nsGmx.LayersTreeNode,
     events: {
         'click .visible-input': function() {
             var isVisible = this.$el.find('.visible-input')[0].checked;
