@@ -181,6 +181,21 @@ nsGmx.LayersTreeNode = Thorax.Model.extend({
         children && children.forEach(function(child) {
             child.eachNode(visitor, onlyLeaves);
         })
+    },
+    
+    isLastInLevel: function() {
+        var model = this,
+            parent = model.get('parent');
+                
+        while (parent) {
+            if (parent.get('childrenNodes').indexOf(model) < parent.get('childrenNodes').length-1) {
+                return false;
+            }
+            model = parent;
+            parent = model.get('parent');
+        }
+        
+        return true;
     }
 })
 
