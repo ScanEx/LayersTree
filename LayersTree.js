@@ -145,7 +145,11 @@ nsGmx.LayersTreeNode = Thorax.Model.extend({
         return state;
     },
     saveState: function() {
-        return this._saveState({expanded: {}, visible: {}});
+        return this._saveState({
+            expanded: {},
+            visible: {},
+            version: '1.0.0'
+        });
     },
     loadState: function(state, applyInitialState) {
         var nodeState = state[this.id],
