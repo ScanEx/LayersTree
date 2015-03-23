@@ -132,6 +132,17 @@ nsGmx.LayersTreeNode = Thorax.Model.extend({
         return bounds;
     },
     
+    getLatLngBounds: function() {
+        var unproject = L.Projection.Mercator.unproject.bind(L.Projection.Mercator),
+            bounds = this.getBounds();
+        
+        if (bounds.isValid()) {
+            return L.latLngBounds(unproject(bounds.min), unproject(bounds.max));
+        } else {
+            return L.latLngBounds([]);
+        }
+    },
+    
     _saveState: function(state) {
         var attrs = this.attributes;
         if (attrs.childrenNodes) {
