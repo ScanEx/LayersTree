@@ -2,7 +2,7 @@
 
 (function() {
 
-nsGmx.LayersTreeNode = Thorax.Model.extend({
+nsGmx.LayersTreeNode = Backbone.Model.extend({
     constructor: function(rawTreeNode, parent) {
         Backbone.Model.apply(this);
         
@@ -214,6 +214,6 @@ nsGmx.LayersTreeNode = Thorax.Model.extend({
     }
 })
 
-var LayersTreeChildren = Thorax.Collection.extend({model: nsGmx.LayersTreeNode});
+var LayersTreeChildren = Backbone.Collection.extend({model: nsGmx.LayersTreeNode});
 
 })();
