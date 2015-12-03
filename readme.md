@@ -27,6 +27,7 @@ var tree = new nsGmx.LayersTreeNode({content: rawMapInfo.Result});
   `visitor` - ф-ция, которая будет вызвана для каждой ноды (нода - первый параметр). `onlyLeaves = true` - итерировать только по листовым нодам
   * `getBounds` - получить bounding box ноды. Для групп объединяет геометрию всех слоёв в поддереве. Возвращает `L.Bounds` в проекции Меркатор (EPSG:3395, L.Projection.Mercator). Работает только если есть Leaflet.
   * `getLatLngBounds` - аналогично `getBounds()`, но возвращает `L.LatLngBounds` - bounding box ноды в географических координатах. Работает только если есть Leaflet.
+  * `select(filterFunc)` - получить массив нод из поддерева данной ноды (включая её саму). `filterFunc(node)->Boolean` - ф-ция для фильтрации массива нод.
   * `isLastInLevel` - является ли данная нода последней на своём уровне (полезно при визуализации)
 
 #### Формат данных при сериализации

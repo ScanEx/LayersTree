@@ -211,6 +211,25 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
         }
         
         return true;
+    },
+    
+    _select: function(filterFunction, partialResult) {
+        var res = [],
+            children = this.attributes.childrenNodes;
+        
+        if (!filterFunction || filterFunction(this)) {
+            partialResult.push(this);
+        }
+        
+        children && children.forEach(function(child) {
+            child._select(filterFunction, partialResult);
+        });
+        
+        return partialResult;
+    },
+    
+    select: function(filterFunction) {
+        return this._select(filterFunction, []);
     }
 })
 
