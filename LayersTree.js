@@ -8,8 +8,6 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
         
         var props = rawTreeNode.content.properties,
             rawChildren = rawTreeNode.content.children;
-            
-        this.id = props.GroupID || props.name;
         
         this.set({
             parent: parent,
@@ -18,7 +16,8 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
             properties: props,
             geometry: rawTreeNode.content.geometry,
             depth: parent ? parent.get('depth') + 1 : 0,
-            expanded: !!props.expanded
+            expanded: !!props.expanded,
+            id: props.GroupID || props.name
         });
 
         if (rawChildren && rawChildren.length) {
