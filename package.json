@@ -1,6 +1,14 @@
 {
-    "name": "gmx-LayersTree",
-    "devDependencies": {
-        "gulp": "3.8.10"
-    }
+  "name": "gmx-layers-tree",
+  "version": "0.0.1",
+  "description": "layers tree model",
+  "main": "LayersTree.js",
+  "directories": {
+    "example": "example"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
 }

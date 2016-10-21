@@ -1,14 +1,19 @@
-﻿var nsGmx = nsGmx || {};
+(function (factory) {
+    if (typeof module === 'object' && module.exports) {
+        module.exports = factory(window._, window.Backbone)
+    } else {
+        window.nsGmx = window.nsGmx || {}
+        window.nsGmx.LayersTreeNode = factory(window._, window.Backbone)
+    }
+})(function(_, Backbone) {
 
-(function() {
-
-nsGmx.LayersTreeNode = Backbone.Model.extend({
+var LayersTreeNode = Backbone.Model.extend({
     constructor: function(rawTreeNode, parent) {
         Backbone.Model.apply(this);
-        
+
         var props = rawTreeNode.content.properties,
             rawChildren = rawTreeNode.content.children;
-        
+
         this.set({
             parent: parent,
             visible: !!props.visible,
@@ -23,11 +28,11 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
         if (rawChildren && rawChildren.length) {
             var children = new LayersTreeChildren(
                 _.map(rawChildren, function(child) {
-                    var node = new nsGmx.LayersTreeNode(child, this);
+                    var node = new LayersTreeNode(child, this);
                     node.on({
                         change: function() {
                             this.trigger('childChange', node);
-                        }, 
+                        },
                         childChange: function(targetNode) {
                             this.trigger('childChange', targetNode);
                         }
@@ -42,12 +47,12 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
 
         return this;
     },
-    
+
     _setSubtreeVisibility: function(isVisible) {
         var attrs = this.attributes;
         if (attrs.visible != isVisible) {
             this.set('visible', isVisible);
-            
+
             if (attrs.childrenNodes) {
                 for (var c = 0; c < attrs.childrenNodes.length; c++) {
                     var vis = isVisible && (!attrs.list || c == 0); //когда делаем видимой группу-список, виден только первый элемент группы
@@ -56,36 +61,36 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
             }
         }
     },
-    
-    setNodeVisibility: function(isVisible) {        
+
+    setNodeVisibility: function(isVisible) {
         //устанавливаем видимость поддерева, которое начинается с этого элемента
         this._setSubtreeVisibility(isVisible);
-        
+
         //идём вверх по дереву до корня и меняем видимость родителей
         var parent = this.attributes.parent;
         parent && parent.updateNodeVisibility(this);
     },
-    
-    
+
+
     updateNodeVisibility: function(triggerSubnode) {
         var attrs = this.attributes,
             isList = attrs.list,
             children = attrs.childrenNodes,
             triggerNodeVisible = triggerSubnode ? triggerSubnode.get('visible') : false,
             visibleNode = triggerNodeVisible ? triggerSubnode : null;
-        
+
         var isVisible = false;
-        
+
         if (children) {
             for (var c = 0; c < children.length; c++) {
                 var child = children.at(c);
                 var childVisible = child.get('visible');
                 isVisible = isVisible || childVisible;
-                
+
                 if (childVisible && !visibleNode) {
                     visibleNode = child;
                 }
-                
+
                 if (isList && childVisible && child !== visibleNode) {
                     child._setSubtreeVisibility(false);
                 }
@@ -94,12 +99,12 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
 
         if (isVisible !== attrs.visible) {
             this.set('visible', isVisible);
-            
+
             var parent = this.attributes.parent;
             parent && parent.updateNodeVisibility(this);
         }
     },
-    
+
     find: function(id) {
         if (this.id == id) {
             return this;
@@ -109,19 +114,19 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
             return memo || node.find(id);
         }, null);
     },
-    
+
     getBounds: function() {
         if (typeof L === 'undefined') {
             return null; //Leaflet is required to calculate bounds
         }
-        
+
         var attrs = this.attributes;
         if (attrs.geometry) {
             return L.bounds(attrs.geometry.coordinates[0]);
         }
-        
+
         var bounds = L.bounds([]);
-        
+
         if (attrs.childrenNodes) {
             attrs.childrenNodes.each(function(child) {
                 var b = child.getBounds();
@@ -130,18 +135,18 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
         }
         return bounds;
     },
-    
+
     getLatLngBounds: function() {
         var unproject = L.Projection.Mercator.unproject.bind(L.Projection.Mercator),
             bounds = this.getBounds();
-        
+
         if (bounds.isValid()) {
             return L.latLngBounds(unproject(bounds.min), unproject(bounds.max));
         } else {
             return L.latLngBounds([]);
         }
     },
-    
+
     _saveState: function(state) {
         var attrs = this.attributes;
         if (attrs.childrenNodes) {
@@ -165,14 +170,14 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
         var nodeState = state[this.id],
             attrs = this.attributes,
             children = attrs.childrenNodes;
-            
+
         if (children) {
             if (this.id in state.expanded) {
                 this.set('expanded', state.expanded[this.id]);
             } else if (applyInitialState){
                 this.set('expanded', !!attrs.properties.expanded);
             }
-            
+
             children.each(function(node) {
                 node.loadState(state, applyInitialState);
             })
@@ -184,23 +189,23 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
             }
         }
     },
-    
+
     eachNode: function(visitor, onlyLeaves) {
         var children = this.attributes.childrenNodes;
-        
+
         if (!onlyLeaves || !children) {
             visitor(this);
         }
-        
+
         children && children.forEach(function(child) {
             child.eachNode(visitor, onlyLeaves);
         })
     },
-    
+
     isLastInLevel: function() {
         var model = this,
             parent = model.get('parent');
-                
+
         while (parent) {
             if (parent.get('childrenNodes').indexOf(model) < parent.get('childrenNodes').length-1) {
                 return false;
@@ -208,30 +213,31 @@ nsGmx.LayersTreeNode = Backbone.Model.extend({
             model = parent;
             parent = model.get('parent');
         }
-        
+
         return true;
     },
-    
+
     _select: function(filterFunction, partialResult) {
         var res = [],
             children = this.attributes.childrenNodes;
-        
+
         if (!filterFunction || filterFunction(this)) {
             partialResult.push(this);
         }
-        
+
         children && children.forEach(function(child) {
             child._select(filterFunction, partialResult);
         });
-        
+
         return partialResult;
     },
-    
+
     select: function(filterFunction) {
         return this._select(filterFunction, []);
     }
 })
 
-var LayersTreeChildren = Backbone.Collection.extend({model: nsGmx.LayersTreeNode});
+var LayersTreeChildren = Backbone.Collection.extend({model: LayersTreeNode});
 
-})();
+return LayersTreeNode
+});
