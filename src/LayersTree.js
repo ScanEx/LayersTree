@@ -235,9 +235,9 @@ var LayersTreeNode = Backbone.Model.extend({
     select: function(filterFunction) {
         return this._select(filterFunction, []);
     }
-})
+});
 
-var LayersTreeChildren = Backbone.Collection.extend({model: LayersTreeNode});
+    var LayersTreeChildren = Backbone.Collection.extend({model: LayersTreeNode});
 
-return LayersTreeNode
+    return LayersTreeNode;
 });
